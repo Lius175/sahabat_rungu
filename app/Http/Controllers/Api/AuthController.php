@@ -43,10 +43,12 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
+        $userData = $user->toArray(); // Convert user model data to array
+        $userData['data'] = $token; // Add token to the array
+
         return response()->json([
             'message' => 'Registration successful',
-            'data' => $user,
-            'token' => $token,
+            'data' => $userData,
         ], 200);
     }
 
@@ -71,10 +73,12 @@ class AuthController extends Controller
 
             if (Hash::check($request->password, $user->password)) {
                 $token = $user->createToken('auth-token')->plainTextToken;
+
+                $userData = $user->toArray(); // Convert user model data to array
+                $userData['token'] = $token; // Add token to the array
                 return response()->json([
                     'message' => 'Login Successfull',
-                    'token' => $token,
-                    'data' => $user,
+                    'data' => $userData,
                 ], 200);
             } else {
                 return response()->json([
