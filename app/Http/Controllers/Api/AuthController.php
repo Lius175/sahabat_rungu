@@ -44,7 +44,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth-token')->plainTextToken;
 
         $userData = $user->toArray(); // Convert user model data to array
-        $userData['data'] = $token; // Add token to the array
+        $userData['token'] = $token; // Add token to the array
 
         return response()->json([
             'message' => 'Registration successful',
