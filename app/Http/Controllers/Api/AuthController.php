@@ -13,13 +13,6 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        // $request->validate([
-        //     'name' => 'required|min:2|max:100',
-        //     'email' => 'required|email|unique:user',
-        //     'password' => 'required|min:6|max:100',
-        //     'confirm_password' => 'required|same:password'
-
-        // ]);
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|min:2|max:100',
@@ -43,8 +36,8 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth-token')->plainTextToken;
 
-        $userData = $user->toArray(); // Convert user model data to array
-        $userData['token'] = $token; // Add token to the array
+        $userData = $user->toArray();
+        $userData['token'] = $token;
 
         return response()->json([
             'message' => 'Registration successful',
@@ -74,8 +67,8 @@ class AuthController extends Controller
             if (Hash::check($request->password, $user->password)) {
                 $token = $user->createToken('auth-token')->plainTextToken;
 
-                $userData = $user->toArray(); // Convert user model data to array
-                $userData['token'] = $token; // Add token to the array
+                $userData = $user->toArray();
+                $userData['token'] = $token;
                 return response()->json([
                     'message' => 'Login Successfull',
                     'data' => $userData,
@@ -95,7 +88,6 @@ class AuthController extends Controller
 
     public function update(Request $request)
     {
-        // Validate the request data
         $request->validate([
             'username' => 'required|string|max:255',
             'password' => 'sometimes|min:6',

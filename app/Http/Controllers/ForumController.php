@@ -42,18 +42,21 @@ class ForumController extends Controller
 
     public function index()
     {
-        $forums = Forum::with('user')->get()->map(function ($forum) {
-            return [
-                'id' => $forum->id,
-                'title' => $forum->title,
-                'description' => $forum->description,
-                'user_id' => $forum->user_id,
-                'created_at' => Carbon::parse($forum->created_at)->format('Y-m-d H:i:s'),
-                'updated_at' => Carbon::parse($forum->updated_at)->format('Y-m-d H:i:s'),
-                'author_name' => $forum->user->name,
-                'author_email' => $forum->user->email,
-            ];
-        });
+        $forums = Forum::with('user')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function ($forum) {
+                return [
+                    'id' => $forum->id,
+                    'title' => $forum->title,
+                    'description' => $forum->description,
+                    'user_id' => $forum->user_id,
+                    'created_at' => Carbon::parse($forum->created_at)->format('Y-m-d H:i:s'),
+                    'updated_at' => Carbon::parse($forum->updated_at)->format('Y-m-d H:i:s'),
+                    'author_name' => $forum->user->name,
+                    'author_email' => $forum->user->email,
+                ];
+            });
 
         return response()->json([
             'data' => $forums
@@ -64,15 +67,8 @@ class ForumController extends Controller
     {
         $forum = Forum::with(['user', 'replies.user'])->findOrFail($id);
 
-        $forumData = [
-            'id' => $forum->id,
-            'title' => $forum->title,
-            'description' => $forum->description,
-            'user_id' => $forum->user_id,
-            'created_at' => Carbon::parse($forum->created_at)->format('Y-m-d H:i:s'),
-            'updated_at' => Carbon::parse($forum->updated_at)->format('Y-m-d H:i:s'),
-            'author_name' => $forum->user->name,
-            'replies' => $forum->replies->map(function ($reply) {
+        $forumData =
+            $forum->replies->map(function ($reply) {
                 return [
                     'id' => $reply->id,
                     'description' => $reply->description,
@@ -82,10 +78,11 @@ class ForumController extends Controller
                     'author_name' => $reply->user->name,
                     'author_email' => $reply->user->email,
                 ];
-            })
-        ];
+            });
 
-        return response()->json($forumData);
+        return response()->json([
+            'data' => $forumData
+        ]);
     }
 
 
@@ -94,7 +91,7 @@ class ForumController extends Controller
         $request->validate([
             'description' => 'required|string',
             'user_id' => 'required|exists:users,id',
-            'forum_id' => 'required|exists:forum,id', // Ensure the forum ID exists
+            'forum_id' => 'required|exists:forum,id',
         ]);
 
         $reply = new Reply([
@@ -106,7 +103,6 @@ class ForumController extends Controller
 
         $reply->save();
 
-        // Fetch user to include user's name in the response
         $user = User::find($request->user_id);
 
         return response()->json([
