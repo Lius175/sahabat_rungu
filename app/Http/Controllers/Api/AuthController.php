@@ -23,7 +23,7 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validations fails',
+                'message' => 'Validasi gagal',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -40,7 +40,7 @@ class AuthController extends Controller
         $userData['token'] = $token;
 
         return response()->json([
-            'message' => 'Registration successful',
+            'message' => 'Registrasi berhasil',
             'data' => $userData,
         ], 200);
     }
@@ -55,7 +55,7 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validations fails',
+                'message' => 'Validasi gagal',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -70,41 +70,64 @@ class AuthController extends Controller
                 $userData = $user->toArray();
                 $userData['token'] = $token;
                 return response()->json([
-                    'message' => 'Login Successfull',
+                    'message' => 'Login berhasil',
                     'data' => $userData,
                 ], 200);
             } else {
                 return response()->json([
-                    'message' => 'Incorrect password',
+                    'message' => 'Password salah',
                 ], 400);
             }
 
         } else {
             return response()->json([
-                'message' => 'User not found',
+                'message' => 'Pengguna tidak ditemukan',
             ], 400);
         }
     }
 
-    public function update(Request $request)
+    public function updateProfile(Request $request, $id)
     {
-        $request->validate([
-            'username' => 'required|string|max:255',
-            'password' => 'sometimes|min:6',
+        $validator = Validator::make($request->all(), [
+            'name' => 'nullable|min:2|max:100',
+            'password' => 'nullable|min:6|max:100',
         ]);
 
-        $user = Auth::user();
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-        // Update the username
-        $user->username = $request->username;
+        $user = User::find($id);
 
-        // Update the password if it's provided
+        if (!$user) {
+            return response()->json([
+                'message' => 'Pengguna tidak ditemukan',
+            ], 404);
+        }
+
+        if ($request->filled('name')) {
+            $user->name = $request->name;
+        }
+
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
 
         $user->save();
 
-        return back()->with('status', 'Profile updated!');
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return response()->json([
+            'data' => [
+                'message' => 'Profile berhasil diperbarui',
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'token' => $token,
+            ],
+        ], 200);
     }
 }

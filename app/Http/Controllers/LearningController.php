@@ -11,7 +11,6 @@ class LearningController extends Controller
     {
         $learning = Learning::findOrFail($id);
 
-        // Check if 'description' and 'video' are already arrays
         $description = is_string($learning->description) ? json_decode($learning->description) : $learning->description;
         $video = is_string($learning->video) ? json_decode($learning->video) : $learning->video;
 

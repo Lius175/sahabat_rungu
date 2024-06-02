@@ -16,7 +16,9 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::post('auth/register', [AuthController::class, 'register']);
 Route::post('auth/login', [AuthController::class, 'login']);
-Route::post('/user/update', [AuthController::class, 'update']);
+
+Route::post('update-profile/{id}', [AuthController::class, 'updateProfile']);
+
 Route::get('learnings/{id}', [LearningController::class, 'show']);
 Route::post('user-learning/completed', [UserLearningController::class, 'markAsCompleted']);
 Route::get('user-learning/progress/{user_id}', [UserLearningController::class, 'getProgress']);
@@ -28,7 +30,8 @@ Route::post('/reply', [ForumController::class, 'storeReply']);
 
 Route::get('/quiz/{id}', [QuizController::class, 'show']);
 Route::get('/answers/{id}', [AnswerController::class, 'show']);
-Route::post('/answers/level1', [AnswerController::class, 'storeLevel1']);
-Route::post('/answers/level2', [AnswerController::class, 'storeLevel2']);
-Route::post('/answers/level3', [AnswerController::class, 'storeLevel3']);
+Route::post('/answers/1', [AnswerController::class, 'storeLevel1']);
+Route::post('/answers/2', [AnswerController::class, 'storeLevel2']);
+Route::post('/answers/3', [AnswerController::class, 'storeLevel3']);
+Route::get('/quiz/progress/{userId}', [AnswerController::class, 'getProgress']);
 

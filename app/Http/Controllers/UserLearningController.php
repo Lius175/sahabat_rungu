@@ -33,32 +33,40 @@ class UserLearningController extends Controller
         ], 200);
     }
 
+
+
     public function getProgress($user_id)
     {
-        // Fetch the user's learning record
         $userLearning = UserLearning::where('user_id', $user_id)->first();
 
-        // If no record exists, the user has no progress
         if (!$userLearning) {
             return response()->json([
                 'user_id' => $user_id,
-                'progress' => number_format(0, 2)
-            ]);
+                'progress' => 0,
+                'progressArray' => [0, 0, 0]
+            ], 200);
         }
 
-        // Get the completed learning IDs array
         $completedLearningIds = $userLearning->completed_learning_ids ?? [];
 
-        // Calculate the progress percentage
-        $totalLearnings = 3; // Assuming 3 as the total number of learnings
+        $totalLearnings = 3;
         $completedCount = count($completedLearningIds);
         $progress = ($completedCount / $totalLearnings) * 100;
-
         $formattedProgress = number_format($progress, 2);
+
+        // Calculate the progress array
+        $progressArray = array_fill(0, $totalLearnings, 0);
+
+        foreach ($completedLearningIds as $id) {
+            if ($id <= $totalLearnings) {
+                $progressArray[$id - 1] = 1;
+            }
+        }
 
         return response()->json([
             'user_id' => $user_id,
-            'progress' => $formattedProgress
-        ]);
+            'progress' => $formattedProgress,
+            'progressArray' => $progressArray
+        ], 200);
     }
 }
