@@ -27,6 +27,8 @@ Route::post('/forum/post', [ForumController::class, 'store'])->name('forum.store
 Route::get('/all-forum', [ForumController::class, 'index'])->name('forum.index');
 Route::get('/forum/{id}', [ForumController::class, 'show'])->name('forum.show');
 Route::post('/reply', [ForumController::class, 'storeReply']);
+Route::delete('/delete-forum/{id}', [ForumController::class, 'destroy']);
+Route::delete('/delete-reply/{id}', [ForumController::class, 'destroyReply']);
 
 Route::get('/quiz/{id}', [QuizController::class, 'show']);
 Route::get('/answers/{id}', [AnswerController::class, 'show']);

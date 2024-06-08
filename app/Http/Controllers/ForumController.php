@@ -111,6 +111,33 @@ class ForumController extends Controller
         ], 201);
     }
 
+    public function destroy($id)
+    {
+        $forum = Forum::with('replies')->findOrFail($id);
+
+        $forum->replies()->delete();
+
+        $forum->delete();
+
+        return response()->json([
+            'message' => 'Forum telah berhasil dihapus',
+            'status' => 200,
+        ], 200);
+    }
+
+    public function destroyReply($id)
+    {
+        $reply = Reply::findOrFail($id);
+
+        $reply->delete();
+
+        return response()->json([
+            'message' => 'Balasan telah berhasil dihapus.',
+            'status' => 200,
+        ], 200);
+    }
+
+
 }
 
 
